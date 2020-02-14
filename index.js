@@ -37,23 +37,23 @@ const movieTemplate = (movieDetail) => {
       </div>
     </div>
     </article>
-  <article class="notification is-secondary">
+  <article data-value=${awards} class="notification is-secondary">
     <p class="title">${movieDetail.Awards}</p>
     <p class="subtitle">Awards</p>
   </article>
-  <article class="notification is-secondary">
+  <article data-value=${dollars} class="notification is-secondary">
     <p class="title">${movieDetail.BoxOffice}</p>
     <p class="subtitle">Box Office</p>
   </article>
-  <article class="notification is-secondary">
+  <article data-value=${metascore} class="notification is-secondary">
     <p class="title">${movieDetail.Metascore}</p>
     <p class="subtitle">Metascore</p>
   </article>
-  <article class="notification is-secondary">
+  <article data-value=${imdbRating} class="notification is-secondary">
     <p class="title">${movieDetail.imdbRating}</p> 
     <p class="subtitle">IMDB Rating</p> 
   </article>
-  <article class="notification is-secondary">
+  <article data-value=${imdbVotes} class="notification is-secondary">
     <p class="title">${movieDetail.imdbVotes}</p> 
     <p class="subtitle">IMDB Votes</p> 
   </article>
@@ -153,5 +153,18 @@ const onMovieSelect = async (movie, summaryElement, side) => {
 
 //compare both
 const runComparison = () => {
-  console.log("compare")
+  const leftSideStats = document.querySelectorAll("#left-summary .notification")
+  const rightSideStats = document.querySelectorAll("#right-summary .notification")
+
+  leftSideStats.forEach((leftStat, index) => {
+    const rightStat = rightSideStats[index];
+    const leftSideValue = parseInt(leftStat.dataset.value);
+    const rightSideValue = parseInt(rightStat.dataset.value);
+
+    if (rightSideValue > leftSideValue) {
+      rightStat.classList.add("is-primary")
+    } else {
+      leftStat.classList.add("is-primary")
+    }
+  })
 }
