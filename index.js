@@ -39,23 +39,23 @@ const movieTemplate = (movieDetail) => {
     </article>
   <article data-value=${awards} class="notification is-secondary">
     <p class="title">${movieDetail.Awards}</p>
-    <p class="subtitle">Awards</p>
+    <p class="tag is-warning">Awards</p>
   </article>
   <article data-value=${dollars} class="notification is-secondary">
     <p class="title">${movieDetail.BoxOffice}</p>
-    <p class="subtitle">Box Office</p>
+    <p class="tag is-warning">Box Office</p>
   </article>
   <article data-value=${metascore} class="notification is-secondary">
     <p class="title">${movieDetail.Metascore}</p>
-    <p class="subtitle">Metascore</p>
+    <p class="tag is-warning">Metascore</p>
   </article>
   <article data-value=${imdbRating} class="notification is-secondary">
     <p class="title">${movieDetail.imdbRating}</p> 
-    <p class="subtitle">IMDB Rating</p> 
+    <p class="tag is-warning">IMDB Rating</p> 
   </article>
   <article data-value=${imdbVotes} class="notification is-secondary">
     <p class="title">${movieDetail.imdbVotes}</p> 
-    <p class="subtitle">IMDB Votes</p> 
+    <p class="tag is-warning">IMDB Votes</p> 
   </article>
 
     `
@@ -80,7 +80,7 @@ const autoCompleteConfig = {
   async fetchData(searchTerm) {
     const response = await axios.get("http://www.omdbapi.com/", {
       params: {
-        apikey: "f0d20119",
+        apikey: config.API_KEY,
         s: searchTerm
       }
     });
@@ -130,7 +130,7 @@ const onMovieSelect = async (movie, summaryElement, side) => {
   //follow up query based on individual ID 
   const response = await axios.get("http://www.omdbapi.com/", {
     params: {
-      apikey: "f0d20119",
+      apikey: config.API_KEY,
       i: movie.imdbID
     }
 
