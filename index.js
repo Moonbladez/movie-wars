@@ -1,6 +1,28 @@
 //html build up for the detailed movie data
 const movieTemplate = (movieDetail) => {
-    return `
+  //replace $ and , with empty strings
+  const dollars = movieDetail.BoxOffice.replace(/\$/g, "").replace(/,/g, "")
+  //turn string into number
+  const metascore = parseInt(movieDetail.Metascore)
+  //turn string into number w/ decimal
+  const imdbRating = parseFloat(movieDetail.imdbRating)
+  //turn string into number and replace comma with empty string
+  const imdbVotes = parseInt(movieDetail.imdbVotes.replace(/,/g, ""))
+  //add up total number of award
+
+  const awards = movieDetail.Awards.split(" ").reduce((prev, word) => {
+    const value = parseInt(word);
+
+    if (isNaN(value)) {
+      return prev;
+    } else {
+      return prev + value;
+    }
+  }, 0)
+
+  console.log(awards)
+
+  return `
     <article class="media">
     <figure class="media-left">
       <p class="image">
@@ -14,7 +36,7 @@ const movieTemplate = (movieDetail) => {
         <p>${movieDetail.Plot}</p>
       </div>
     </div>
-  </article>
+    </article>
   <article class="notification is-secondary">
     <p class="title">${movieDetail.Awards}</p>
     <p class="subtitle">Awards</p>
@@ -40,77 +62,96 @@ const movieTemplate = (movieDetail) => {
 }
 
 const autoCompleteConfig = {
-    renderOption: (movie) => {
-        //if no image is available. Dont show 
-        const imgSrc = movie.Poster === "N/A" ? "" : movie.Poster;
-        return `
+  renderOption: (movie) => {
+    //if no image is available. Dont show 
+    const imgSrc = movie.Poster === "N/A" ? "" : movie.Poster;
+    return `
         <img  src="${imgSrc}"/>
         ${movie.Title}
         (${movie.Year})
         `
-    },
-    //return value in input
-    inputValue(movie) {
-        return movie.Title;
-    },
+  },
+  //return value in input
+  inputValue(movie) {
+    return movie.Title;
+  },
 
-    //fetching data
-    async fetchData(searchTerm) {
-        const response = await axios.get("http://www.omdbapi.com/", {
-            params: {
-                apikey: "f0d20119",
-                s: searchTerm
-            }
-        });
+  //fetching data
+  async fetchData(searchTerm) {
+    const response = await axios.get("http://www.omdbapi.com/", {
+      params: {
+        apikey: "f0d20119",
+        s: searchTerm
+      }
+    });
 
-        if (response.data.Error) {
-            return [];
-        }
-
-        //return just the search data from the response
-        return response.data.Search
+    if (response.data.Error) {
+      return [];
     }
+
+    //return just the search data from the response
+    return response.data.Search
+  }
 }
 
 //duplicate autocomplete component config
 //left search
 createAutoComplete({
-    ...autoCompleteConfig,
-    //where to render the component to
-    root: document.querySelector("#left-autocomplete"),
+  ...autoCompleteConfig,
+  //where to render the component to
+  root: document.querySelector("#left-autocomplete"),
 
-    //What happens when selection of movie is made
-    onOptionSelect(movie) {
-        document.querySelector(".tutorial").classList.add("is-hidden")
-        onMovieSelect(movie, document.querySelector("#left-summary"))
-    },
+  //What happens when selection of movie is made
+  onOptionSelect(movie) {
+    document.querySelector(".tutorial").classList.add("is-hidden")
+    onMovieSelect(movie, document.querySelector("#left-summary"), "left")
+  },
 })
 
 //right searcg
 createAutoComplete({
-    ...autoCompleteConfig,
-    //where to render the component to
-    root: document.querySelector("#right-autocomplete"),
+  ...autoCompleteConfig,
+  //where to render the component to
+  root: document.querySelector("#right-autocomplete"),
 
-    //What happens when selection of movie is made
-    onOptionSelect(movie) {
-        document.querySelector(".tutorial").classList.add("is-hidden")
-        onMovieSelect(movie, document.querySelector("#right-summary"))
-    },
+  //What happens when selection of movie is made
+  onOptionSelect(movie) {
+    document.querySelector(".tutorial").classList.add("is-hidden")
+    onMovieSelect(movie, document.querySelector("#right-summary"), "right")
+  },
 })
 
-
+//variables for storing side of search for comparison
+let leftMovie;
+let rightMovie;
 
 //once person has selected movie from drop down
-const onMovieSelect = async (movie, summaryElement) => {
-    //follow up query based on individual ID 
-    const response = await axios.get("http://www.omdbapi.com/", {
-        params: {
-            apikey: "f0d20119",
-            i: movie.imdbID
-        }
+const onMovieSelect = async (movie, summaryElement, side) => {
+  //follow up query based on individual ID 
+  const response = await axios.get("http://www.omdbapi.com/", {
+    params: {
+      apikey: "f0d20119",
+      i: movie.imdbID
+    }
 
-    });
-    console.log(response.data)
-    summaryElement.innerHTML = movieTemplate(response.data)
+  });
+  console.log(response.data)
+  summaryElement.innerHTML = movieTemplate(response.data)
+
+  if (side === "left") {
+    leftMovie = response.data;
+  } else {
+    rightMovie = response.data
+  }
+
+  //make sure both right and left has filled in
+  if (leftMovie && rightMovie) {
+    runComparison();
+  }
+}
+
+
+//compare both
+const runComparison = () => {
+  console.log("compare")
 }
