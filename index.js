@@ -39,9 +39,7 @@ const movieTemplate = (movieDetail) => {
     `
 }
 
-//duplicate autocomplete component config
-createAutoComplete({
-    root: document.querySelector(".autocomplete"),
+const autoCompleteConfig = {
     renderOption: (movie) => {
         //if no image is available. Dont show 
         const imgSrc = movie.Poster === "N/A" ? "" : movie.Poster;
@@ -50,10 +48,6 @@ createAutoComplete({
         ${movie.Title}
         (${movie.Year})
         `
-    },
-    //What happens when selection of movie is made
-    onOptionSelect(movie) {
-        onMovieSelect(movie)
     },
     //return value in input
     inputValue(movie) {
@@ -76,12 +70,39 @@ createAutoComplete({
         //return just the search data from the response
         return response.data.Search
     }
+}
+
+//duplicate autocomplete component config
+//left search
+createAutoComplete({
+    ...autoCompleteConfig,
+    //where to render the component to
+    root: document.querySelector("#left-autocomplete"),
+
+    //What happens when selection of movie is made
+    onOptionSelect(movie) {
+        document.querySelector(".tutorial").classList.add("is-hidden")
+        onMovieSelect(movie, document.querySelector("#left-summary"))
+    },
+})
+
+//right searcg
+createAutoComplete({
+    ...autoCompleteConfig,
+    //where to render the component to
+    root: document.querySelector("#right-autocomplete"),
+
+    //What happens when selection of movie is made
+    onOptionSelect(movie) {
+        document.querySelector(".tutorial").classList.add("is-hidden")
+        onMovieSelect(movie, document.querySelector("#right-summary"))
+    },
 })
 
 
 
 //once person has selected movie from drop down
-const onMovieSelect = async movie => {
+const onMovieSelect = async (movie, summaryElement) => {
     //follow up query based on individual ID 
     const response = await axios.get("http://www.omdbapi.com/", {
         params: {
@@ -91,5 +112,5 @@ const onMovieSelect = async movie => {
 
     });
     console.log(response.data)
-    document.querySelector("#summary").innerHTML = movieTemplate(response.data)
+    summaryElement.innerHTML = movieTemplate(response.data)
 }
